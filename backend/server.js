@@ -3,6 +3,19 @@ const app = express();
 const port = 3000;
 const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
+const path = require('path');
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./uploads")
+  },
+  filename: (req, file, cb) => {
+    const awalFile = Date.now() + "-" + Math.round(Math.random() * 1E9)
+    cb(null, awalFile + "-" + file.originalname)
+  }
+});
+const upload = multer({ storage: storage });
+
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
@@ -161,6 +174,51 @@ app.delete('/foto/:id_foto', (req, res) => {
       )
     }
   })
+})
+
+app.post("/foto", upload.single("file"), async (req, res) => {
+  const { judul, deskripsi, id_pengguna, id_kategori } = req.body
+  const nama_file = req.file ? req.file.filename : null
+  if (!judul || !id_pengguna || !nama_file) {
+    return res.status(400).json({ message: "judul,nama_pengguna wajib diisi" })
+  }
+
+  try {
+    const sql = 'insert into foto(judul, deskripsi, nama_file, id_pengguna, id_kategori, tgl_unggah) values (?,?,?,?,?,now())'
+    db.query(sql, [judul, deskripsi, nama_file, id_pengguna, id_kategori], (err, result) => {
+      if (err) return res.status(500).json({ error: err.message })
+      res.json({
+        message: "gambar berhasil dimasukkan", id_foto: result.insertId
+      })
+    })
+  } catch (error) {
+    res.status(500).json({ error: "gagal insert" })
+  }
+})
+
+
+app.put("/foto/:id_foto", upload.single("file"), async (req, res) => {
+  const { judul, deskripsi, id_pengguna, id_kategori } = req.body
+  const { id_foto } = req.params;
+  const nama_file = req.file ? req.file.filename : null
+  if (!judul || !id_pengguna || !nama_file) {
+    return res.status(400).json({ message: "judul,nama_pengguna wajib diisi" })
+  }
+
+  try {
+    const sql = 'UPDATE foto SET judul = ?, deskripsi = ?, nama_file= ?, id_pengguna= ?, id_kategori= ?, tgl_unggah = now() where id_foto = ?';
+    db.query(sql, [judul, deskripsi, nama_file, id_pengguna, id_kategori, id_foto], (err, result) => {
+      if (err) return res.status(500).json({ error: err.sqlMessage });
+      if (result.affectedRows === 0) return res.status(404).json({ error: "foto tidak ditemukan" })
+      else {
+        res.json({
+          message: "gambar berhasil diupdate", id_foto: id_foto
+        })
+      }
+    })
+  } catch (error) {
+    res.status(500).json({ error: "gagal update" })
+  }
 })
 
 
