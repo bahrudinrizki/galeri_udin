@@ -24,13 +24,7 @@ function App() {
   return (
     <div>
       <Header />
-      <TestEffect/>
-      <Counter/>
-      <DaftarKategori/>
-      <KartuFoto judul ="Pantai Sore" pengunggah ="Budi" />
-      <KartuFoto judul ="Gunung Pagi" pengunggah ="Sari" />
-      <KartuFoto judul ="Sawah Hijau" pengunggah ="Andi"/>
-      <KartuFoto judul ="Design" pengunggah ="Udin"/>
+      <DaftarKategori />
     </div>
   );
 }
