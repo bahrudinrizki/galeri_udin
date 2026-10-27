@@ -4,6 +4,7 @@ const port = 3000;
 const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
+const cors = require('cors');
 const path = require('path');
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -26,22 +27,27 @@ const db = mysql.createConnection({
 db.connect(err => {
   if (err) {
     console.error('gagal koneksi ke database: ', err);
+    return;
   }
   console.log('berhasil mlebu cuyy ke mysql');
 });
 
+
+app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
 app.get('/', (req, res) => {
   res.send('ini di endpoint root');
 });
 
 app.get('/kategori', (req, res) => {
   const sql = 'SELECT * FROM kategori';
-  db.query(sql, (salah, hasil) => {
-    if (salah) return res.status(500).json({ error: salah });
-    res.json(hasil);
-  });
-});
+  db.query(sql, (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(result);
+  })
+})
 
 app.post('/kategori', (req, res) => {
   const { nama_kategori } = req.body;
