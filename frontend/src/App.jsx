@@ -2,9 +2,9 @@ import Header from "./Header";
 import KartuFoto from "./KartuFoto";
 import Counter from "./Counter";
 import DaftarKategori from "./DaftarKategori";
-import { useEffect } from "react";
+import TestEffect from "./testEffect";
 
-function App() {
+/*function App() {
   useEffect(() => {
     fetch("http://localhost:3000/kategori")
     .then((res) => res.json())
@@ -18,12 +18,13 @@ function App() {
       <p>Buka console (f12) untuk melihat hasilnya</p>
     </div>
   );
-}
-/*
+}*/
+
 function App() {
   return (
     <div>
       <Header />
+      <TestEffect/>
       <Counter/>
       <DaftarKategori/>
       <KartuFoto judul ="Pantai Sore" pengunggah ="Budi" />
@@ -33,5 +34,6 @@ function App() {
     </div>
   );
 }
-*/
+
+
 export default App;
