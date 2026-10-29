@@ -2,6 +2,8 @@ import { useState, useEffect } from "react" ;
 
 const API = "http://localhost:3000"
 
+
+
 function DaftarKategori() {
   const [kategori, setKategori] = useState([]);
   const [namaBaru, setNamaBaru] = useState("");
@@ -38,6 +40,7 @@ function DaftarKategori() {
   return (
     <div>
       <h2> Daftar Kategori</h2>
+      <p>Total: {kategori.length} kategori</p>
 
       <form onSubmit={tambah}>
         <input
@@ -47,6 +50,11 @@ function DaftarKategori() {
         />
         <button type="submit">Tambah</button>
       </form>
+
+
+         {kategori.length === 0 ? <p>Belum ada kategori</p> : <p>Ada isinya</p>}
+         {kategori.length > 10 && <p>Banyak Sekali</p>}
+
 
       <ul>
         {kategori.map((k) => (
