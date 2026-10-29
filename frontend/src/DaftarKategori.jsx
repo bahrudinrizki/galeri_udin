@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react" ;
+import { useState, useEffect } from "react";
 
 const API = "http://localhost:3000"
 
@@ -52,17 +52,34 @@ function DaftarKategori() {
       </form>
 
 
-         {kategori.length === 0 ? <p>Belum ada kategori</p> : <p>Ada isinya</p>}
-         {kategori.length > 10 && <p>Banyak Sekali</p>}
+      {kategori.length === 0 ? <p>Belum ada kategori</p> : <p>Ada isinya</p>}
+      {kategori.length > 10 && <p>Banyak Sekali</p>}
 
 
       <ul>
         {kategori.map((k) => (
-          <li key={k.id_kategori}>{k.nama_kategori}</li>
+          <li key={k.id_kategori}>{k.nama_kategori}{" "}
+          <button onClick={() => hapus(k.id_kategori)}>hapus</button>
+          </li>
         ))}
       </ul>
     </div>
   )
+
+ function hapus(id) {
+  if (!window.confirm("Yakin mau menghapus kategori ini?")) return;
+
+  fetch(`${API}/kategori/${id}`, { method: "DELETE" })
+    .then((res) => res.json())
+    .then((hasil) => {
+      if (hasil.error) {
+        alert("Gagal menghapus: " + hasil.error);
+        return;
+      }
+      ambilData();
+    })
+    .catch((err) => console.log("Gagal hapus:", err));
 }
 
+}
 export default DaftarKategori;
