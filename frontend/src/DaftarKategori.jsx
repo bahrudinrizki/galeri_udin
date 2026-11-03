@@ -58,8 +58,24 @@ function DaftarKategori() {
 
       <ul>
         {kategori.map((k) => (
-          <li key={k.id_kategori}>{k.nama_kategori}{" "}
-          <button onClick={() => hapus(k.id_kategori)}>hapus</button>
+          <li key={k.id_kategori}>
+            {idEdit === k.id_kategori ? (
+              <>
+              <input
+               value={namaEdit}
+               onChange={(e) => setNamaEdit(e.target.value)}
+               />{" "}
+               <button onClick={() => simpanEdit(k.id_kategori)}>Simpan</button>{" "}
+               <button onClick={batalEdit}>Batal</button>
+               </>
+            ) : (
+              <>
+              {k.nama_kategori}{" "}
+              <button onClick={() => mulaiEdit(k)}>Edit</button>{" "}
+              <button onClick={() => hapus(k.id_kategori)}>Hapus</button>
+              </>
+            )}
+
           </li>
         ))}
       </ul>
@@ -79,6 +95,36 @@ function DaftarKategori() {
       ambilData();
     })
     .catch((err) => console.log("Gagal hapus:", err));
+}
+
+function mulaiEdit(k) {
+  setIdEdit(k. id_kategori);
+  setNamaEdit(k.nama_kategori);
+}
+
+function batalEdit() {
+  setIdEdit(null);
+  setNamaEdit(" ");
+}
+
+function simpanEdit(e) {
+  if (namaEdit.trim() === "") return;
+
+  fetch(`${API}/kategori/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json"},
+    body: JSON.stringify({ nama_kategori: namaEdit}),
+  })
+    .then((res) = res.json())
+    .then((hasil) => {
+      if (hasi.error) {
+        alert("Gagal mengubah:" + hasil.error);
+        return;
+      }
+      batalEdit();
+      ambilData();
+    })
+    .catch((err) => console.log ("Gagal edit:", err));
 }
 
 }

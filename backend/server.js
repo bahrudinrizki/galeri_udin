@@ -6,6 +6,8 @@ const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const cors = require('cors');
 const path = require('path');
+const jsonwebtoken = require('jsonwebtoken')
+const authJWT = require('./middleware')
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "./uploads")
@@ -207,26 +209,61 @@ app.put("/foto/:id_foto", upload.single("file"), async (req, res) => {
   const { judul, deskripsi, id_pengguna, id_kategori } = req.body
   const { id_foto } = req.params;
   const nama_file = req.file ? req.file.filename : null
-  if (!judul || !id_pengguna || !nama_file) {
-    return res.status(400).json({ message: "judul,nama_pengguna wajib diisi" })
+  if (!judul || !id_pengguna) {
+    return res.status(400).json({ message: "judul, id_pengguna wajib diisi" })
   }
-
   try {
-    const sql = 'UPDATE foto SET judul = ?, deskripsi = ?, nama_file= ?, id_pengguna= ?, id_kategori= ?, tgl_unggah = now() where id_foto = ?';
-    db.query(sql, [judul, deskripsi, nama_file, id_pengguna, id_kategori, id_foto], (err, result) => {
-      if (err) return res.status(500).json({ error: err.sqlMessage });
-      if (result.affectedRows === 0) return res.status(404).json({ error: "foto tidak ditemukan" })
-      else {
-        res.json({
-          message: "gambar berhasil diupdate", id_foto: id_foto
-        })
-      }
-    })
+    if (nama_file == null) {
+      const sql = 'update foto set judul = ?, deskripsi = ?, id_pengguna = ?, id_kategori = ?, tgl_unggah = now() where id_foto=?';
+      db.query(sql, [judul, deskripsi, id_pengguna, id_kategori, id_foto], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (result.affectedRows === 0) return res.status(404).json({ error: "foto tidak ditemukan" })
+        else {
+          res.json({
+            message: "gambar berhasil diupdate", id_foto: id_foto
+          })
+        }
+      })
+    } else {
+      const sql = 'update foto set judul = ?, deskripsi = ?, nama_file= ?, id_pengguna = ?, id_kategori = ?, tgl_unggah = now() where id_foto = ?';
+      db.query(sql, [judul, deskripsi, nama_file, id_pengguna, id_kategori, id_foto], (err, result) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (result.affectedRows === 0) return res.status(404).json({ error: "foto tidak ditemukan" })
+        else {
+          res.json({
+            message: "gambar berhasil di update", id_foto: id_foto
+          })
+        }
+      })
+    }
   } catch (error) {
     res.status(500).json({ error: "gagal update" })
   }
 })
 
+app.post('/login', (req, res) => {
+  const { email, password } = req.body
+  const sql = 'select * from pengguna where email=?'
+  db.query(sql, [email], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message })
+    if (result.length == 0) {
+      return res.status(404).json({ message: 'email tidak ditemukan' })
+    }
+    const user = result[0]
+    const passwordValid = bcrypt.compareSync(password, user.password)
+    if (passwordValid) {
+      return res.status(401).json({ message: 'password salah' })
+    }
+    const token = jsonwebtoken.sign({
+      id: user.id_pengguna
+    }, 'inirahasiakita', { expiresIn: 86400 })
+    res.status(200).json({
+      auth: true,
+      token,
+      id_pengguna: user.id_pengguna
+    })
+  })
+})
 
 app.listen(port, () => {
   console.log(`berjalan di http://localhost:${port}`);
