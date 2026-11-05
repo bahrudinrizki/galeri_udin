@@ -161,7 +161,7 @@ app.put('/pengguna/:id_pengguna', async (req, res) => {
   }
 })
 
-app.get('/foto', (req, res) => {
+app.get('/foto', authJWT,(req, res) => {
   const sql = 'SELECT * FROM foto';
   db.query(sql, (salah, hasil) => {
     if (salah) return res.status(500).json({ error: salah });
