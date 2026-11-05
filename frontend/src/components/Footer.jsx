@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
    <div>
-  <footer classname>
+  <footer >
     IKILO footer ng ngisorr kudune
   </footer>
   
