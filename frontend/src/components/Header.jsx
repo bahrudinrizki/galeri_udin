@@ -4,7 +4,7 @@ export default function Header() {
   return (<nav className="navbar navbar-expand-lg bg-body-tertiary">
     <div className="container-fluid">
       <a className="navbar-brand" href="#">Galeri Uden</a>
-      
+
       <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span className="navbar-toggler-icon" />
       </button>
@@ -20,7 +20,10 @@ export default function Header() {
             <Link to={'/galeri'} className="nav-link">Galeri</Link>
           </li>
           <li className="nav-item">
-            <button className='btn btn-danger'>logout</button>
+            <Link to={'/login'} className="nav-link">Login</Link>
+          </li>
+          <li className="nav-item">
+            <button className='btn btn-danger'>Logout</button>
           </li>
         </ul>
       </div>
