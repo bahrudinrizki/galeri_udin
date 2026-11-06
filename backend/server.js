@@ -251,7 +251,7 @@ app.post('/login', (req, res) => {
     }
     const user = result[0]
     const passwordValid = bcrypt.compareSync(password, user.password)
-    if (passwordValid) {
+    if (!passwordValid) {
       return res.status(401).json({ message: 'password salah' })
     }
     const token = jsonwebtoken.sign({
