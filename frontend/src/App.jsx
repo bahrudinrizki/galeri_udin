@@ -4,6 +4,7 @@ import Home from "./pages/Home"
 import Pengguna from "./pages/Pengguna";
 import Galeri from "./pages/Galeri";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="pengguna" element={<Pengguna />}></Route>
           <Route path="galeri" element={<Galeri />}></Route>
            <Route path="login" element={<Login />}>Login</Route>
+            <Route path="register" element={<Register/>}>Login</Route>
         </Route>
        
       </Routes>
