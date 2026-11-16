@@ -102,9 +102,9 @@ app.get('/pengguna', (req, res) => {
 })
 
 app.get('/pengguna/:id_pengguna', authJWT,(req, res) => {
-  const {id_penguna} = req.params
+  const {id_pengguna} = req.params
   const sql = 'SELECT * FROM pengguna where id_pengguna=?';
-  db.query(sql, [id_penguna], (err, result) => {
+  db.query(sql, [id_pengguna], (err, result) => {
     if (err) return res.status(500).json({ error: err });
     res.json(result);
   })
@@ -145,10 +145,10 @@ app.post('/pengguna', async (req, res) => {
   }
 });
 
-app.put('/pengguna/:id_pengguna', async (req, res) => {
+app.put('/pengguna/:id_pengguna', authJWT, async (req, res) => {
   const { nama, email, password, no_hp } = req.body;
   const { id_pengguna } = req.params;
-  if (password != null) {
+  if (password !== "") {
     const hashPassword = await bcrypt.hash(password, 10);
     const sql = 'UPDATE pengguna SET nama = ?, email = ?, password = ?, no_hp = ? WHERE id_pengguna =?';
     db.query(sql, [nama, email, hashPassword, no_hp, id_pengguna], (err, result) => {

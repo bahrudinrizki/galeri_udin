@@ -7,7 +7,7 @@ const authJWT = (req, res, next) => {
   if (token) {
     const auth = token.split(" ")[1]
     jwt.verify(auth, kataRahasia, (err, user) => {
-      if (err) return res.status(403)
+      if (err) return res.sendStatus(403)
       req.user = user
       next()
     })
