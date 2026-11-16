@@ -63,7 +63,7 @@ app.post('/kategori', (req, res) => {
   });
 });
 
-app.put('/kategori/:id_kategori', (req, res) => {
+app.put('/kategori/:id_kategori', authJWT,(req, res) => {
   const { id_kategori } = req.params;
   const { nama_kategori } = req.body;
   const sql = 'UPDATE kategori SET nama_kategori = ? WHERE id_kategori = ?';
@@ -97,6 +97,15 @@ app.get('/pengguna', (req, res) => {
   const sql = 'SELECT * FROM pengguna';
   db.query(sql, (err, result) => {
     if (err) return res.status(500).json({ error: err.sqlMessage });
+    res.json(result);
+  })
+})
+
+app.get('/pengguna/:id_pengguna', authJWT,(req, res) => {
+  const {id_penguna} = req.params
+  const sql = 'SELECT * FROM pengguna where id_pengguna=?';
+  db.query(sql, [id_penguna], (err, result) => {
+    if (err) return res.status(500).json({ error: err });
     res.json(result);
   })
 })
