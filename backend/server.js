@@ -180,7 +180,7 @@ app.get('/foto', authJWT,(req, res) => {
 
 app.get('/foto/:id_pengguna', authJWT,(req, res) => {
   const {id_pengguna}=req.params
-  const sql = 'SELECT * a.id_foto,a.judul,a.deskripsi,a.tgl_unggah,a.nama_file,b.nama_kategori,';
+  const sql = 'SELECT * a.id_foto,a.judul,a.deskripsi,a.tgl_unggah,a.nama_file,b.nama_kategori,c.nama from foto a, kategori b, pengguna c where (a.id_kategori=b.id_kategori) and (a.id_pengguna=c.id_pengguna) and (a.id_pengguna =?)';
   db.query(sql, (salah, hasil) => {
     if (salah) return res.status(500).json({ error: salah });
     res.json(hasil);
