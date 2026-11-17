@@ -11,14 +11,18 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="login" element={<Login />}>Login</Route>
+         <Route path="register" element={<Register />}>Login</Route>
+
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />}></Route>
           <Route path="pengguna" element={<Pengguna />}></Route>
           <Route path="galeri" element={<Galeri />}></Route>
-           <Route path="login" element={<Login />}>Login</Route>
-            <Route path="register" element={<Register/>}>Login</Route>
+         
+
+
         </Route>
-       
+
       </Routes>
     </BrowserRouter>
   )

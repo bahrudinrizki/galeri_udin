@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Register() {
   return (
     <main className="form-signin w-100 m-auto">
@@ -23,6 +25,7 @@ export default function Register() {
         <button className="btn btn-primary w-100 py-2" type="submit">
           Register
         </button>
+        <Link to={'/login'} className="btn btn-secondary w-100 py-2" type="submit">Login</Link>
         <p className="mt-5 mb-3 text-body-secondary">© 2017–2025</p>
       </form>
     </main>

@@ -48,7 +48,7 @@ export default function Pengguna() {
   return (
     <div className="card border-success">
       <form onSubmit={handleUpdate}>
-        <div className="card-header">Form Profile</div>
+        <div className="card-header" >Edit Profil</div>
         <div className="card-body">
           <div className="form-group">
             <label htmlFor="nama">Nama</label>
