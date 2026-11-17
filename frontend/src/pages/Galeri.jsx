@@ -49,22 +49,21 @@ export default function Galeri() {
         <button className="btn btn-primary">Tambah Foto</button>
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
           {galeri.length > 0 ? (
-            galeri.map(item => {
+            galeri.map(item => (
               <div className="col" key={item.id_foto}>
                 <div className="card shadow-sm">
-                  <svg aria-label="Placeholder: Thumbnail" className="bd-placeholder-img card-img-top" height={225} preserveAspectRatio="xMidYMid slice" role="img" width="100%" xmlns="http://www.w3.org/2000/svg">
-                    <title>Placeholder</title>
-                    <rect width="100%" height="100%" fill="#55595c" />
-                    <text x="50%" y="50%" fill="#eceeef" dy=".3em">
-                      Thumbnail
-                    </text>
-                  </svg>
+
+                  <div className="bd-placeholder-img card-img-top"></div>
+                  <p className="card-text">
+                    {item.judul}
+                  </p>
+
+                  <img src={`http://localhost:3000/uploads/${item.nama_file}`} alt="" />
                   <div className="card-body">
                     <p className="card-text">
-                      This is a wider card with supporting text below as a natural
-                      lead-in to additional content. This content is a little bit
-                      longer.
+                      {item.deskripsi}
                     </p>
+
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="btn-group">
                         <button type="button" className="btn btn-sm btn-outline-secondary">
@@ -79,7 +78,7 @@ export default function Galeri() {
                   </div>
                 </div>
               </div>
-            })) : (
+            ))) : (
             <h2>tidak ada data</h2>
           )}
 

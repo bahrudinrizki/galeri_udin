@@ -63,7 +63,7 @@ app.post('/kategori', (req, res) => {
   });
 });
 
-app.put('/kategori/:id_kategori', authJWT,(req, res) => {
+app.put('/kategori/:id_kategori', authJWT, (req, res) => {
   const { id_kategori } = req.params;
   const { nama_kategori } = req.body;
   const sql = 'UPDATE kategori SET nama_kategori = ? WHERE id_kategori = ?';
@@ -101,8 +101,8 @@ app.get('/pengguna', (req, res) => {
   })
 })
 
-app.get('/pengguna/:id_pengguna', authJWT,(req, res) => {
-  const {id_pengguna} = req.params
+app.get('/pengguna/:id_pengguna', authJWT, (req, res) => {
+  const { id_pengguna } = req.params
   const sql = 'SELECT * FROM pengguna where id_pengguna=?';
   db.query(sql, [id_pengguna], (err, result) => {
     if (err) return res.status(500).json({ error: err });
@@ -170,7 +170,7 @@ app.put('/pengguna/:id_pengguna', authJWT, async (req, res) => {
   }
 })
 
-app.get('/foto', authJWT,(req, res) => {
+app.get('/foto', authJWT, (req, res) => {
   const sql = 'SELECT * FROM foto';
   db.query(sql, (salah, hasil) => {
     if (salah) return res.status(500).json({ error: salah });
@@ -178,10 +178,10 @@ app.get('/foto', authJWT,(req, res) => {
   });
 });
 
-app.get('/foto/:id_pengguna', authJWT,(req, res) => {
-  const {id_pengguna}=req.params
-  const sql = 'SELECT * a.id_foto,a.judul,a.deskripsi,a.tgl_unggah,a.nama_file,b.nama_kategori,c.nama from foto a, kategori b, pengguna c where (a.id_kategori=b.id_kategori) and (a.id_pengguna=c.id_pengguna) and (a.id_pengguna =?)';
-  db.query(sql, (salah, hasil) => {
+app.get('/foto/:id_pengguna', authJWT, (req, res) => {
+  const { id_pengguna } = req.params
+  const sql = 'SELECT  a.id_foto,a.judul,a.deskripsi,a.tgl_unggah,a.nama_file,b.nama_kategori,c.nama from foto a, kategori b, pengguna c where (a.id_kategori=b.id_kategori) and (a.id_pengguna=c.id_pengguna) and (a.id_pengguna =?)';
+  db.query(sql, [id_pengguna], (salah, hasil) => {
     if (salah) return res.status(500).json({ error: salah });
     res.json(hasil);
   });
