@@ -178,6 +178,15 @@ app.get('/foto', authJWT,(req, res) => {
   });
 });
 
+app.get('/foto/:id_pengguna', authJWT,(req, res) => {
+  const {id_pengguna}=req.params
+  const sql = 'SELECT * a.id_foto,a.judul,a.deskripsi,a.tgl_unggah,a.nama_file,b.nama_kategori,';
+  db.query(sql, (salah, hasil) => {
+    if (salah) return res.status(500).json({ error: salah });
+    res.json(hasil);
+  });
+});
+
 app.delete('/foto/:id_foto', (req, res) => {
   const { id_foto } = req.params;
   const sql = 'DELETE FROM foto WHERE id_foto = ?';
