@@ -42,7 +42,7 @@ app.get('/', (req, res) => {
   res.send('ini di endpoint root');
 });
 
-app.get('/kategori', (req, res) => {
+app.get('/kategori', authJWT, (req, res) => {
   const sql = 'SELECT * FROM kategori';
   db.query(sql, (err, result) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -186,7 +186,7 @@ app.get('/foto/:id_pengguna', authJWT, (req, res) => {
   });
 });
 
-app.delete('/foto/:id_foto', (req, res) => {
+app.delete('/foto/:id_foto', authJWT, (req, res) => {
   const { id_foto } = req.params;
   const sql = 'DELETE FROM foto WHERE id_foto = ?';
   db.query(sql, [id_foto], (err, result) => {

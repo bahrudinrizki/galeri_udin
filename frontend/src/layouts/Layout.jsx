@@ -16,13 +16,11 @@ export default function Layout() {
   return (
     <div className="wrapper">
       <Header/>
-      <div className="container">
         <div className="row">
           <div className="col">
             <Outlet/>
           </div>
-        </div>
-      </div>
+        </div>     
       <Footer/>
     </div>
   )

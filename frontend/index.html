@@ -6,18 +6,387 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    html,
-    body {
-      height: 100%;
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&display=swap');
+
+    /* =========================================================
+   Galeri Uden: arsip foto yang tenang
+   Satu aksen hijau, selebihnya netral. Tanpa gradient/glow.
+   Selector memakai awalan "html body" agar menang atas
+   bootstrap.min.css yang dimuat Vite setelah <style> ini.
+   ========================================================= */
+
+    :root {
+      --green: #1f4d3f;
+      --green-dark: #173a2f;
+      --paper: #f6f5f2;
+      --white: #ffffff;
+      --ink: #1c1c1a;
+      --quiet: #6b6a65;
+      --rule: rgb(28 28 26 / 14%);
+      --danger: #a63d2f;
     }
 
-    .form-signin {
-      max-width: 330px;
+    * {
+      box-sizing: border-box;
+    }
+
+    html body {
+      margin: 0;
+      color: var(--ink);
+      background-color: var(--paper);
+      font-family: 'Instrument Sans', system-ui, sans-serif;
+      font-weight: 400;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html body a {
+      color: var(--green);
+    }
+
+    /* Kerangka halaman (Layout.jsx) */
+    .wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wrapper>.container {
+      flex: 1;
+    }
+
+    /* Hilangkan padding ganda saat container berada di dalam container */
+    .wrapper .container .container {
+      max-width: none;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    /* Fokus keyboard yang terlihat */
+    :focus-visible {
+      outline: 2px solid var(--green);
+      outline-offset: 2px;
+    }
+
+    /* =========================================================
+   Navbar (Header.jsx)
+   ========================================================= */
+    html body .navbar {
+      min-height: 4rem;
+      background-color: var(--green) !important;
+      border-bottom: 1px solid rgb(255 255 255 / 18%);
+      box-shadow: none !important;
+    }
+
+    html body .navbar .navbar-brand {
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -.015em;
+    }
+
+    html body .navbar .nav-link {
+      margin: 0 .1rem;
+      padding: .35rem .65rem;
+      color: rgb(255 255 255 / 76%);
+      border-radius: .25rem;
+      font-size: .9rem;
+      font-weight: 400;
+    }
+
+    html body .navbar .nav-link:hover,
+    html body .navbar .nav-link.active {
+      color: var(--white);
+      background: rgb(255 255 255 / 12%);
+    }
+
+    html body .navbar .navbar-toggler {
+      border-color: rgb(255 255 255 / 35%);
+      box-shadow: none;
+    }
+
+    html body .navbar .navbar-toggler-icon {
+      filter: invert(1);
+    }
+
+    /* Tombol Logout di atas latar hijau */
+    html body .navbar .btn-danger {
+      --bs-btn-color: #fff;
+      --bs-btn-bg: transparent;
+      --bs-btn-border-color: rgb(255 255 255 / 55%);
+      --bs-btn-hover-color: var(--green);
+      --bs-btn-hover-bg: #fff;
+      --bs-btn-hover-border-color: #fff;
+      --bs-btn-active-color: var(--green);
+      --bs-btn-active-bg: #fff;
+      --bs-btn-active-border-color: #fff;
+      margin-left: .5rem;
+    }
+
+    /* =========================================================
+   Tombol
+   ========================================================= */
+    html body .btn {
+      border-radius: .25rem;
+      font-size: .875rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      box-shadow: none;
+      transition: background-color .16s ease, border-color .16s ease, color .16s ease;
+    }
+
+    html body .btn-primary {
+      --bs-btn-color: #fff;
+      --bs-btn-bg: var(--green);
+      --bs-btn-border-color: var(--green);
+      --bs-btn-hover-color: #fff;
+      --bs-btn-hover-bg: var(--green-dark);
+      --bs-btn-hover-border-color: var(--green-dark);
+      --bs-btn-active-color: #fff;
+      --bs-btn-active-bg: var(--green-dark);
+      --bs-btn-active-border-color: var(--green-dark);
+      --bs-btn-focus-shadow-rgb: 31, 77, 63;
+    }
+
+    html body .btn-secondary {
+      --bs-btn-color: #fff;
+      --bs-btn-bg: var(--quiet);
+      --bs-btn-border-color: var(--quiet);
+      --bs-btn-hover-color: #fff;
+      --bs-btn-hover-bg: #55544f;
+      --bs-btn-hover-border-color: #55544f;
+      --bs-btn-active-color: #fff;
+      --bs-btn-active-bg: #55544f;
+      --bs-btn-active-border-color: #55544f;
+    }
+
+    html body .btn-danger {
+      --bs-btn-color: var(--danger);
+      --bs-btn-bg: transparent;
+      --bs-btn-border-color: var(--danger);
+      --bs-btn-hover-color: #fff;
+      --bs-btn-hover-bg: var(--danger);
+      --bs-btn-hover-border-color: var(--danger);
+      --bs-btn-active-color: #fff;
+      --bs-btn-active-bg: var(--danger);
+      --bs-btn-active-border-color: var(--danger);
+    }
+
+    html body .btn-outline-secondary {
+      --bs-btn-color: var(--quiet);
+      --bs-btn-bg: transparent;
+      --bs-btn-border-color: var(--rule);
+      --bs-btn-hover-color: #fff;
+      --bs-btn-hover-bg: var(--quiet);
+      --bs-btn-hover-border-color: var(--quiet);
+      --bs-btn-active-color: #fff;
+      --bs-btn-active-bg: var(--quiet);
+      --bs-btn-active-border-color: var(--quiet);
+    }
+
+    /* =========================================================
+   Halaman galeri (Galeri.jsx)
+   Urutan kartu: foto, judul, deskripsi, tombol
+   ========================================================= */
+    html body .album,
+    html body .album.bg-body-tertiary {
+      padding: 3rem 0 4.5rem !important;
+      background-color: transparent !important;
+    }
+
+    .album>.container>.btn-primary {
+      margin-bottom: 2rem;
+      padding: .6rem 1rem;
+    }
+
+    .album .row {
+      --bs-gutter-x: 1.5rem;
+      --bs-gutter-y: 1.5rem;
+    }
+
+    .album>.container>.row>h2,
+    .album .row>h2 {
+      margin: 0;
+      color: var(--quiet);
+      font-size: 1rem;
+      font-weight: 400;
+    }
+
+    .album .card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      border: 1px solid var(--rule);
+      border-radius: 0;
+      background: var(--white);
+      box-shadow: none !important;
+      transition: border-color .18s ease;
+    }
+
+    .album .card:hover {
+      border-color: var(--green);
+    }
+
+    /* 1. foto */
+    .album .card-img-top {
+      display: block;
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 0;
+      background: var(--paper);
+    }
+
+    .album .card-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
       padding: 1rem;
     }
 
-    .form-signin .form-floating:focus-within {
-      z-index: 2;
+    /* 2. judul */
+    .album .card-title {
+      margin: 0 0 .25rem;
+      color: var(--ink);
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    /* 3. deskripsi */
+    .album .card-text {
+      flex: 1;
+      min-height: 2.7rem;
+      margin: 0 0 1rem;
+      color: var(--quiet);
+      font-size: .875rem;
+      line-height: 1.55;
+    }
+
+    /* 4. tombol View / Edit / Delete + tanggal */
+    .album .card-body>.d-flex {
+      padding-top: .9rem;
+      border-top: 1px solid var(--rule);
+    }
+
+    .album .btn-group .btn {
+      padding: .3rem .6rem;
+      font-size: .78rem;
+    }
+
+    .album small {
+      color: var(--quiet) !important;
+      font-size: .75rem;
+    }
+
+    /* =========================================================
+   Modal (dirender manual lewat state, tanpa JS Bootstrap)
+   ========================================================= */
+    .modal.d-block {
+      background: rgb(28 28 26 / 48%);
+    }
+
+    .modal-dialog {
+      margin-top: 7vh;
+    }
+
+    .modal-content {
+      overflow: hidden;
+      border: 1px solid var(--rule);
+      border-radius: 0;
+      box-shadow: 0 1rem 2.5rem rgb(28 28 26 / 20%);
+    }
+
+    .modal-header {
+      padding: 1rem 1.25rem;
+      color: var(--white);
+      border: 0;
+      background: var(--green);
+    }
+
+    .modal-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .modal-header .btn-close {
+      filter: invert(1);
+      opacity: .85;
+    }
+
+    .modal form {
+      margin-top: 0 !important;
+    }
+
+    .modal-body {
+      padding: 1.25rem;
+    }
+
+    .modal label,
+    .form-group label {
+      display: block;
+      margin-bottom: .4rem;
+      color: var(--ink);
+      font-size: .84rem;
+      font-weight: 600;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.25rem;
+      border-top-color: var(--rule);
+      background: var(--paper);
+    }
+
+    /* =========================================================
+   Form
+   ========================================================= */
+    html body .form-control,
+    html body .form-select {
+      min-height: 2.55rem;
+      color: var(--ink);
+      border-color: var(--rule);
+      border-radius: .2rem;
+      background-color: var(--white);
+    }
+
+    html body .form-control:focus,
+    html body .form-select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 .18rem rgb(31 77 63 / 15%);
+    }
+
+    html body .form-check-input:checked {
+      background-color: var(--green);
+      border-color: var(--green);
+    }
+
+    html body .form-check-input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 .18rem rgb(31 77 63 / 15%);
+    }
+
+    /* =========================================================
+   Login (Login.jsx)
+   ========================================================= */
+    html body .form-signin {
+      max-width: 390px;
+      margin-top: 8vh;
+      padding: 2rem;
+      border: 1px solid var(--rule);
+      border-radius: 0;
+      background: var(--white);
+      box-shadow: none;
+    }
+
+    .form-signin h1 {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .form-signin .btn+.btn,
+    .form-signin a.btn {
+      margin-top: .7rem;
     }
 
     .form-signin input[type="email"] {
@@ -32,87 +401,92 @@
       border-top-right-radius: 0;
     }
 
-    .bd-placeholder-img {
-      font-size: 1.125rem;
-      text-anchor: middle;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      user-select: none;
+    /* Logo di Login.jsx path-nya belum valid. Hapus baris ini setelah gambar benar. */
+    .form-signin img {
+      display: none;
     }
 
-    @media (min-width: 768px) {
-      .bd-placeholder-img-lg {
-        font-size: 3.5rem;
+    /* =========================================================
+   Profil (Pengguna.jsx)
+   ========================================================= */
+    .card.border-success {
+      max-width: 680px;
+      margin: 3rem auto;
+      overflow: hidden;
+      border: 1px solid var(--rule) !important;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .card-header {
+      padding: 1rem 1.25rem;
+      color: var(--ink);
+      border-bottom-color: var(--rule);
+      background: var(--paper);
+      font-size: .95rem;
+      font-weight: 600;
+    }
+
+    .card.border-success .card-body {
+      padding: 1.25rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .card-footer {
+      padding: 1rem 1.25rem;
+      border-top-color: var(--rule);
+      background: var(--paper);
+    }
+
+    /* =========================================================
+   Footer (Footer.jsx)
+   ========================================================= */
+    .container-fixed-bottom {
+      background: var(--white);
+    }
+
+    footer {
+      margin-bottom: 0 !important;
+      color: var(--quiet);
+      border-top-color: var(--rule) !important;
+      font-size: .8rem;
+    }
+
+    footer .text-body-secondary {
+      color: var(--quiet) !important;
+    }
+
+    /* =========================================================
+   Layar kecil
+   ========================================================= */
+    @media (max-width: 575.98px) {
+
+      html body .album,
+      html body .album.bg-body-tertiary {
+        padding: 2rem 0 3rem !important;
+      }
+
+      .album .card-img-top {
+        height: 220px;
+      }
+
+      .modal-dialog {
+        margin: 1rem;
+      }
+
+      html body .form-signin {
+        margin: 2rem 1rem;
+        padding: 1.5rem;
       }
     }
 
-    .b-example-divider {
-      width: 100%;
-      height: 3rem;
-      background-color: #0000001a;
-      border: solid rgba(0, 0, 0, 0.15);
-      border-width: 1px 0;
-      box-shadow:
-        inset 0 0.5em 1.5em #0000001a,
-        inset 0 0.125em 0.5em #00000026;
-    }
-
-    .b-example-vr {
-      flex-shrink: 0;
-      width: 1.5rem;
-      height: 100vh;
-    }
-
-    .bi {
-      vertical-align: -0.125em;
-      fill: currentColor;
-    }
-
-    .nav-scroller {
-      position: relative;
-      z-index: 2;
-      height: 2.75rem;
-      overflow-y: hidden;
-    }
-
-    .nav-scroller .nav {
-      display: flex;
-      flex-wrap: nowrap;
-      padding-bottom: 1rem;
-      margin-top: -1px;
-      overflow-x: auto;
-      text-align: center;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .btn-bd-primary {
-      --bd-violet-bg: #712cf9;
-      --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
-      --bs-btn-font-weight: 600;
-      --bs-btn-color: var(--bs-white);
-      --bs-btn-bg: var(--bd-violet-bg);
-      --bs-btn-border-color: var(--bd-violet-bg);
-      --bs-btn-hover-color: var(--bs-white);
-      --bs-btn-hover-bg: #6528e0;
-      --bs-btn-hover-border-color: #6528e0;
-      --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
-      --bs-btn-active-color: var(--bs-btn-hover-color);
-      --bs-btn-active-bg: #5a23c8;
-      --bs-btn-active-border-color: #5a23c8;
-    }
-
-    .bd-mode-toggle {
-      z-index: 1500;
-    }
-
-    .bd-mode-toggle .bi {
-      width: 1em;
-      height: 1em;
-    }
-
-    .bd-mode-toggle .dropdown-menu .active .bi {
-      display: block !important;
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+      }
     }
   </style>
   <title>frontend</title>
