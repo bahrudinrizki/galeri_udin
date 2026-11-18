@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
 
 export default function Galeri() {
   const token = localStorage.getItem('token')
@@ -14,7 +13,6 @@ export default function Galeri() {
   const [id_kategori, setId_kategori] = useState("")
   const [kategori, setKategori] = useState([])
   const [idFoto, setIdFoto] = useState("")
-  const navigate = useNavigate()
   const [view, setView] = useState(false)
   const [selected, setSelected]= useState(null)
 
@@ -31,11 +29,10 @@ export default function Galeri() {
     try {
       const res = await fetch(`http://localhost:3000/foto/${id_pengguna}`, {
         headers: { 'Authorization': `bearer ${token}` }
-      }
-
-      )
-        .then((res) => res.json())
-        .then((data) => setGaleri(data))
+      })
+      if (!res.ok) throw new Error('gagal mengambil foto')
+      const data = await res.json()
+      setGaleri(data)
 
 
     } catch (error) {
@@ -59,19 +56,19 @@ export default function Galeri() {
     setIsEdit(false)
     setJudul("")
     setDeskripsi("")
-    setFile("")
+    setFile(null)
     setId_kategori("")
     setIdFoto("")
-    setShow("true")
+    setShow(true)
   }
   const handleOpenEdit = (item) => {
     setIsEdit(true)
     setJudul(item.judul)
-    setDeskripsi(item.deskripsi)
-    setFile("null")
-    setId_kategori(item.id_kategori)
+    setDeskripsi(item.deskripsi ?? "")
+    setFile(null)
+    setId_kategori(item.id_kategori ?? "")
     setIdFoto(item.id_foto)
-    setShow("true")
+    setShow(true)
   }
   const handleFileChange = (e) => {
     const file = e.target.files[0]
@@ -87,10 +84,12 @@ export default function Galeri() {
     if (isEdit) {
       if (!judul || !id_kategori) {
         alert('judul dan kategori wajib diisi')
+        return
       }
     } else {
       if (!judul || !id_kategori || !file) {
         alert('judul dan kategori dan foto wajib diisi')
+        return
       }
     }
 
@@ -99,7 +98,7 @@ export default function Galeri() {
     formData.append("deskripsi", deskripsi)
     formData.append("id_kategori", id_kategori)
     formData.append("id_pengguna", id_pengguna)
-    formData.append("file", file)
+    if (file) formData.append("file", file)
     try {
       const url = isEdit ? `http://localhost:3000/foto/${idFoto}` : `http://localhost:3000/foto`
       const method = isEdit ? 'PUT' : 'POST'
@@ -139,6 +138,8 @@ export default function Galeri() {
       if (res.ok) {
         alert('galeri berhasil dihapus')
         getGaleri()
+      } else {
+        alert('gagal menghapus galeri')
       }
 
     }
@@ -169,7 +170,7 @@ export default function Galeri() {
                     <h5 className="modal-title">
                       {isEdit ? 'Form Edit Galeri' : 'Form Tambah Galeri'}
                     </h5>
-                    <button className="btn-close" onClick={handleClose}>Close</button>
+                    <button type="button" className="btn-close" onClick={handleClose}></button>
                   </div>
                   <form onSubmit={handleSubmit} className="mt-3">
                     <div className="modal-body">
@@ -207,7 +208,7 @@ export default function Galeri() {
                       </div>
                     </div>
                     <div className="modal-footer">
-                      <button className="btn btn-secondary" onClick={handleClose}>Close</button>
+                      <button type="button" className="btn btn-secondary" onClick={handleClose}>Close</button>
                       <button type="submit" className="btn btn-primary" >
                         {isEdit ? 'Update' : 'Save'}
                       </button>

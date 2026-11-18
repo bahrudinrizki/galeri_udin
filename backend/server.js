@@ -8,6 +8,7 @@ const cors = require('cors');
 const path = require('path');
 const jsonwebtoken = require('jsonwebtoken')
 const authJWT = require('./middleware')
+const isAdmin = authJWT.isAdmin
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "./uploads")
@@ -38,6 +39,27 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
+// hanya pemilik akun (atau admin) yang boleh mengakses /:id_pengguna
+const cekPemilikAkun = (req, res, next) => {
+  if (String(req.user.id) !== req.params.id_pengguna && req.user.role !== 'admin') {
+    return res.sendStatus(403)
+  }
+  next()
+}
+
+// hanya pemilik foto (atau admin) yang boleh mengubah / menghapus foto
+const cekPemilikFoto = (req, res, next) => {
+  const { id_foto } = req.params
+  db.query('select id_pengguna from foto where id_foto = ?', [id_foto], (err, result) => {
+    if (err) return res.status(500).json({ error: err.sqlMessage })
+    if (result.length === 0) return res.status(404).json({ error: "foto tidak ditemukan" })
+    if (result[0].id_pengguna !== req.user.id && req.user.role !== 'admin') {
+      return res.sendStatus(403)
+    }
+    next()
+  })
+}
+
 app.get('/', (req, res) => {
   res.send('ini di endpoint root');
 });
@@ -62,7 +84,7 @@ app.post('/kategori', authJWT, isAdmin, (req, res) => {
   });
 });
 
-app.put('/kategori/:id_kategori', authJWT, (req, res) => {
+app.put('/kategori/:id_kategori', authJWT, isAdmin, (req, res) => {
   const { id_kategori } = req.params;
   const { nama_kategori } = req.body;
   const sql = 'UPDATE kategori SET nama_kategori = ? WHERE id_kategori = ?';
@@ -93,23 +115,23 @@ app.delete('/kategori/:id_kategori', authJWT, isAdmin, (req, res) => {
 })
 
 app.get('/pengguna', authJWT, isAdmin, (req, res) => {
-  const sql = 'SELECT * FROM pengguna';
+  const sql = 'SELECT id_pengguna, nama, email, no_hp, role FROM pengguna';
   db.query(sql, (err, result) => {
     if (err) return res.status(500).json({ error: err.sqlMessage });
     res.json(result);
   })
 })
 
-app.get('/pengguna/:id_pengguna', authJWT, isAdmin,(req, res) => {
+app.get('/pengguna/:id_pengguna', authJWT, cekPemilikAkun, (req, res) => {
   const { id_pengguna } = req.params
-  const sql = 'SELECT * FROM pengguna where id_pengguna=?';
+  const sql = 'SELECT id_pengguna, nama, email, no_hp, role FROM pengguna where id_pengguna=?';
   db.query(sql, [id_pengguna], (err, result) => {
-    if (err) return res.status(500).json({ error: err });
+    if (err) return res.status(500).json({ error: err.sqlMessage });
     res.json(result);
   })
 })
 
-app.delete('/pengguna/:id_pengguna', (req, res) => {
+app.delete('/pengguna/:id_pengguna', authJWT, isAdmin, (req, res) => {
   const { id_pengguna } = req.params;
   const sql = 'DELETE FROM pengguna WHERE id_pengguna = ?';
   db.query(sql, [id_pengguna], (err, result) => {
@@ -144,28 +166,28 @@ app.post('/pengguna', async (req, res) => {
   }
 });
 
-app.put('/pengguna/:id_pengguna', authJWT, async (req, res) => {
+app.put('/pengguna/:id_pengguna', authJWT, cekPemilikAkun, async (req, res) => {
   const { nama, email, password, no_hp } = req.body;
   const { id_pengguna } = req.params;
-  if (password !== "") {
-    const hashPassword = await bcrypt.hash(password, 10);
-    const sql = 'UPDATE pengguna SET nama = ?, email = ?, password = ?, no_hp = ? WHERE id_pengguna =?';
-    db.query(sql, [nama, email, hashPassword, no_hp, id_pengguna], (err, result) => {
-      if (err) return res.status(500).json({ error: err.sqlMessage });
-      if (result.affectedRows == 0) res.status(500).json({ error: "id pengguna tidak ditemukan" })
-      else {
+  try {
+    if (password) {
+      const hashPassword = await bcrypt.hash(password, 10);
+      const sql = 'UPDATE pengguna SET nama = ?, email = ?, password = ?, no_hp = ? WHERE id_pengguna =?';
+      db.query(sql, [nama, email, hashPassword, no_hp, id_pengguna], (err, result) => {
+        if (err) return res.status(500).json({ error: err.sqlMessage });
+        if (result.affectedRows == 0) return res.status(404).json({ error: "id pengguna tidak ditemukan" })
         res.send('data pengguna berhasil diubah')
-      }
-    })
-  } else {
-    const sql = 'UPDATE pengguna SET nama =?, email=?, no_hp=? where id_pengguna =?'
-    db.query(sql, [nama, email, no_hp, id_pengguna], (err, result) => {
-      if (err) return res.status(500).json({ error: err.sqlMessage })
-      if (result.affectedRows == 0) res.status(500).json({ error: "id pengguna tidak ditemukan" })
-      else {
+      })
+    } else {
+      const sql = 'UPDATE pengguna SET nama =?, email=?, no_hp=? where id_pengguna =?'
+      db.query(sql, [nama, email, no_hp, id_pengguna], (err, result) => {
+        if (err) return res.status(500).json({ error: err.sqlMessage })
+        if (result.affectedRows == 0) return res.status(404).json({ error: "id pengguna tidak ditemukan" })
         res.send('data pengguna berhasil diubah')
-      }
-    })
+      })
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message })
   }
 })
 
@@ -177,16 +199,16 @@ app.get('/foto', authJWT, (req, res) => {
   });
 });
 
-app.get('/foto/:id_pengguna', authJWT, (req, res) => {
+app.get('/foto/:id_pengguna', authJWT, cekPemilikAkun, (req, res) => {
   const { id_pengguna } = req.params
-  const sql = 'SELECT  a.id_foto,a.judul,a.deskripsi,a.tgl_unggah,a.nama_file,b.nama_kategori,c.nama from foto a, kategori b, pengguna c where (a.id_kategori=b.id_kategori) and (a.id_pengguna=c.id_pengguna) and (a.id_pengguna =?)';
+  const sql = 'SELECT a.id_foto,a.judul,a.deskripsi,a.tgl_unggah,a.nama_file,a.id_kategori,b.nama_kategori,c.nama from foto a left join kategori b on a.id_kategori=b.id_kategori join pengguna c on a.id_pengguna=c.id_pengguna where a.id_pengguna =?';
   db.query(sql, [id_pengguna], (salah, hasil) => {
-    if (salah) return res.status(500).json({ error: salah });
+    if (salah) return res.status(500).json({ error: salah.sqlMessage });
     res.json(hasil);
   });
 });
 
-app.delete('/foto/:id_foto', authJWT, (req, res) => {
+app.delete('/foto/:id_foto', authJWT, cekPemilikFoto, (req, res) => {
   const { id_foto } = req.params;
   const sql = 'DELETE FROM foto WHERE id_foto = ?';
   db.query(sql, [id_foto], (err, result) => {
@@ -201,16 +223,17 @@ app.delete('/foto/:id_foto', authJWT, (req, res) => {
   })
 })
 
-app.post("/foto", upload.single("file"), async (req, res) => {
-  const { judul, deskripsi, id_pengguna, id_kategori } = req.body
+app.post("/foto", authJWT, upload.single("file"), async (req, res) => {
+  const { judul, deskripsi, id_kategori } = req.body
+  const id_pengguna = req.user.id
   const nama_file = req.file ? req.file.filename : null
-  if (!judul || !id_pengguna || !nama_file) {
-    return res.status(400).json({ message: "judul,nama_pengguna wajib diisi" })
+  if (!judul || !nama_file) {
+    return res.status(400).json({ message: "judul dan foto wajib diisi" })
   }
 
   try {
     const sql = 'insert into foto(judul, deskripsi, nama_file, id_pengguna, id_kategori, tgl_unggah) values (?,?,?,?,?,now())'
-    db.query(sql, [judul, deskripsi, nama_file, id_pengguna, id_kategori], (err, result) => {
+    db.query(sql, [judul, deskripsi, nama_file, id_pengguna, id_kategori || null], (err, result) => {
       if (err) return res.status(500).json({ error: err.message })
       res.json({
         message: "gambar berhasil dimasukkan", id_foto: result.insertId
@@ -222,17 +245,17 @@ app.post("/foto", upload.single("file"), async (req, res) => {
 })
 
 
-app.put("/foto/:id_foto", upload.single("file"), async (req, res) => {
-  const { judul, deskripsi, id_pengguna, id_kategori } = req.body
+app.put("/foto/:id_foto", authJWT, cekPemilikFoto, upload.single("file"), async (req, res) => {
+  const { judul, deskripsi, id_kategori } = req.body
   const { id_foto } = req.params;
   const nama_file = req.file ? req.file.filename : null
-  if (!judul || !id_pengguna) {
-    return res.status(400).json({ message: "judul, id_pengguna wajib diisi" })
+  if (!judul) {
+    return res.status(400).json({ message: "judul wajib diisi" })
   }
   try {
     if (nama_file == null) {
-      const sql = 'update foto set judul = ?, deskripsi = ?, id_pengguna = ?, id_kategori = ?, tgl_unggah = now() where id_foto=?';
-      db.query(sql, [judul, deskripsi, id_pengguna, id_kategori, id_foto], (err, result) => {
+      const sql = 'update foto set judul = ?, deskripsi = ?, id_kategori = ?, tgl_unggah = now() where id_foto=?';
+      db.query(sql, [judul, deskripsi, id_kategori || null, id_foto], (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
         if (result.affectedRows === 0) return res.status(404).json({ error: "foto tidak ditemukan" })
         else {
@@ -242,8 +265,8 @@ app.put("/foto/:id_foto", upload.single("file"), async (req, res) => {
         }
       })
     } else {
-      const sql = 'update foto set judul = ?, deskripsi = ?, nama_file= ?, id_pengguna = ?, id_kategori = ?, tgl_unggah = now() where id_foto = ?';
-      db.query(sql, [judul, deskripsi, nama_file, id_pengguna, id_kategori, id_foto], (err, result) => {
+      const sql = 'update foto set judul = ?, deskripsi = ?, nama_file= ?, id_kategori = ?, tgl_unggah = now() where id_foto = ?';
+      db.query(sql, [judul, deskripsi, nama_file, id_kategori || null, id_foto], (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
         if (result.affectedRows === 0) return res.status(404).json({ error: "foto tidak ditemukan" })
         else {
@@ -271,7 +294,7 @@ app.post('/login', (req, res) => {
     if (!passwordValid) {
       return res.status(401).json({ message: 'password salah' })
     }
-    const token = jsonwebtoken.sign({id: user.id_pengguna, role: user.role}, 'inirahasiakita', { expiresIn: 86400 })
+    const token = jsonwebtoken.sign({id: user.id_pengguna, role: user.role}, authJWT.kataRahasia, { expiresIn: 86400 })
     res.status(200).json({
       auth: true,
       token,

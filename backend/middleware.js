@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const kataRahasia = 'inirahasiakita'
+const kataRahasia = process.env.JWT_SECRET || 'inirahasiakita'
 
 const authJWT = (req, res, next) => {
   const header = req.header('Authorization')
@@ -18,4 +18,5 @@ const isAdmin = (req, res, next) => {
 }
 
 authJWT.isAdmin = isAdmin
+authJWT.kataRahasia = kataRahasia
 module.exports = authJWT

@@ -20,7 +20,7 @@ export default function Login() {
       })
       if (res.ok){
         const data = await res.json()
-        if (data.token !=null || data.token===""){
+        if (data.token){
           setFormData({
             email:"",
             password:""
@@ -45,15 +45,15 @@ export default function Login() {
   }
   return (
     <main className="form-signin w-100 m-auto">
-      <form>
-        <img className="mb-4" src="../assets/brand/bootstrap-logo.svg" alt width={72} height={57} />
+      <form onSubmit={handleSubmit}>
+        <img className="mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width={72} height={57} />
         <h1 className="h3 mb-3 fw-normal">Silahkan Login Dulu</h1>
         <div className="form-floating">
-          <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com" name="email" onChange={handleChange}/>
+          <input type="email" className="form-control" id="floatingInput" placeholder="name@example.com" name="email" value={formData.email} onChange={handleChange} required />
           <label htmlFor="floatingInput">Alamat Email</label>
         </div>
         <div className="form-floating">
-          <input type="password" className="form-control" id="floatingPassword" placeholder="Password" name="password" onChange={handleChange}/>
+          <input type="password" className="form-control" id="floatingPassword" placeholder="Password" name="password" value={formData.password} onChange={handleChange} required />
           <label htmlFor="floatingPassword">Password</label>
         </div>
         <div className="form-check text-start my-3">
@@ -62,7 +62,7 @@ export default function Login() {
             Ingat aku
           </label>
         </div>
-        <button className="btn btn-primary w-100 py-2" type="submit" onClick={handleSubmit}>
+        <button className="btn btn-primary w-100 py-2" type="submit">
           Log in
         </button>
         <div>
