@@ -29,7 +29,12 @@ export default function Login() {
           localStorage.setItem('id_pengguna',data.id_pengguna)
           localStorage.setItem("role", data.role)
           alert('Berhasil Login')
-          navigate('/')
+          if (data.role === 'admin') {
+            navigate('/admin')
+          }else {
+            navigate('/')
+          }
+
         }else {
           alert('Login gagal')
         }

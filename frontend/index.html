@@ -485,6 +485,60 @@
         transition: none !important;
       }
     }
+
+
+/* Layout Admin */
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  width: 240px;
+  padding: 25px 18px;
+  background: #212529;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.admin-link {
+  color: #adb5bd;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 5px;
+}
+
+.admin-link:hover,
+.admin-link.active {
+  background: #343a40;
+  color: white;
+}
+
+.admin-content {
+  flex: 1;
+  min-width: 0;
+  padding: 25px;
+  background: #f8f9fa;
+}
+
+@media (max-width: 767px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  .admin-sidebar {
+    width: 100%;
+  }
+
+  .admin-content {
+    padding: 15px;
+  }
+}
+
+
   </style>
   <title>frontend</title>
 </head>
