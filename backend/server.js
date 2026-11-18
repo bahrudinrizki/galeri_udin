@@ -50,7 +50,7 @@ app.get('/kategori', authJWT, (req, res) => {
   })
 })
 
-app.post('/kategori', (req, res) => {
+app.post('/kategori', authJWT, isAdmin, (req, res) => {
   const { nama_kategori } = req.body;
   const sql = 'INSERT INTO kategori (nama_kategori) VALUES (?)'
   db.query(sql, [nama_kategori], (err, result) => {
@@ -77,7 +77,7 @@ app.put('/kategori/:id_kategori', authJWT, (req, res) => {
   })
 })
 
-app.delete('/kategori/:id_kategori', (req, res) => {
+app.delete('/kategori/:id_kategori', authJWT, isAdmin, (req, res) => {
   const { id_kategori } = req.params;
   const sql = 'DELETE FROM kategori WHERE id_kategori =?';
   db.query(sql, [id_kategori], (err, result) => {
@@ -92,7 +92,7 @@ app.delete('/kategori/:id_kategori', (req, res) => {
   })
 })
 
-app.get('/pengguna', (req, res) => {
+app.get('/pengguna', authJWT, isAdmin, (req, res) => {
   const sql = 'SELECT * FROM pengguna';
   db.query(sql, (err, result) => {
     if (err) return res.status(500).json({ error: err.sqlMessage });
@@ -100,7 +100,7 @@ app.get('/pengguna', (req, res) => {
   })
 })
 
-app.get('/pengguna/:id_pengguna', authJWT, (req, res) => {
+app.get('/pengguna/:id_pengguna', authJWT, isAdmin,(req, res) => {
   const { id_pengguna } = req.params
   const sql = 'SELECT * FROM pengguna where id_pengguna=?';
   db.query(sql, [id_pengguna], (err, result) => {
@@ -271,13 +271,12 @@ app.post('/login', (req, res) => {
     if (!passwordValid) {
       return res.status(401).json({ message: 'password salah' })
     }
-    const token = jsonwebtoken.sign({
-      id: user.id_pengguna
-    }, 'inirahasiakita', { expiresIn: 86400 })
+    const token = jsonwebtoken.sign({id: user.id_pengguna, role: user.role}, 'inirahasiakita', { expiresIn: 86400 })
     res.status(200).json({
       auth: true,
       token,
-      id_pengguna: user.id_pengguna
+      id_pengguna: user.id_pengguna,
+      role: user.role
     })
   })
 })

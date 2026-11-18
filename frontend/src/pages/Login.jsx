@@ -27,6 +27,7 @@ export default function Login() {
           })
           localStorage.setItem('token',data.token)
           localStorage.setItem('id_pengguna',data.id_pengguna)
+          localStorage.setItem("role", data.role)
           alert('Berhasil Login')
           navigate('/')
         }else {

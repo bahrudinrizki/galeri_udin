@@ -230,7 +230,9 @@ export default function Galeri() {
                   <button type="button" className="btn-close" onClick={handleCloseView}></button>
                 </div>
                 <div className="modal-body">
-                  <img src={`http://localhost:3000/uploads/${selected.nama_file}`} alt={selected.judul} className="img-fluid" />
+                  <img src={`http://localhost:3000/uploads/${selected.nama_file}`} alt={selected.judul} className="img-fluid" style={{maxHeight:"90vh", objectFit:"contain", justifyContent:"center"
+
+                  }}/>
                   <p className="mt-3 mb-1">{selected.deskripsi}</p>
                   <small className="text-body-secondary">
                     {selected.nama_kategori} - {new Date(selected.tgl_unggah).toLocaleDateString("id-ID")}
