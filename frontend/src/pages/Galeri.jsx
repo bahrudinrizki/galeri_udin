@@ -15,6 +15,8 @@ export default function Galeri() {
   const [kategori, setKategori] = useState([])
   const [idFoto, setIdFoto] = useState("")
   const navigate = useNavigate()
+  const [view, setView] = useState(false)
+  const [selected, setSelected]= useState(null)
 
   useEffect(() => {
     fetch(`http://localhost:3000/kategori`, {
@@ -141,10 +143,23 @@ export default function Galeri() {
 
     }
   }
+
+  const handleView = (item) => {
+    setSelected(item)
+    setView(true)
+
+  }
+
+  const handleCloseView =() => {
+    setView(false)
+    setSelected(null)
+  } 
+
   return (
     <div className="album py-5 bg-body-tertiary">
       <div className="container">
         <button className="btn btn-primary" onClick={handleOpenAdd}>Tambah Foto</button>
+        
         {show && (
           <>
             <div className="modal d-block fade show" role="dialog" tabIndex={-1} >
@@ -204,6 +219,31 @@ export default function Galeri() {
           </>
 
         )}
+
+        {view && selected &&(
+          <>
+          <div className="modal d-block fade show" role="dialog" tabIndex={-1}>
+            <div className="modal-dialog modal-lg">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">{selected.judul}</h5>
+                  <button type="button" className="btn-close" onClick={handleCloseView}></button>
+                </div>
+                <div className="modal-body">
+                  <img src={`{http://localhost:3000/uploads/${selected.nama_file}`} alt={selected.judul} className="img-fluid" />
+                  <p className="mt-3 mb-1">{selected.deskripsi}</p>
+                  <small className="text-body-secondary">
+                    {selected.nama_kategori} - {new Date(selected.tgl_unggah).toLocaleDateString("id-ID")}
+                  </small>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" onClick={handleCloseView}>Tutup</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          </>
+        )}
         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
           {galeri.length > 0 ? (
             galeri.map(item => (
@@ -220,7 +260,7 @@ export default function Galeri() {
 
                     <div className="d-flex justify-content-between align-items-center">
                       <div className="btn-group">
-                        <button type="button" className="btn btn-sm btn-outline-secondary">View</button>
+                        <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => handleView(item)}>View</button>
                         <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => handleOpenEdit(item)}>Edit</button>
                         <button type="button" className="btn btn-sm btn-danger" onClick={() => handleDelete(item.id_foto)}>Delete</button>
                       </div>
