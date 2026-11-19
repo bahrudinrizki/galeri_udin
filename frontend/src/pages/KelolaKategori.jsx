@@ -8,7 +8,7 @@ export default function KelolaKategori() {
 
   const ambilKategori = async () => {
     try {
-      const res = await fetch('http://localhost:3000/kategori', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/kategori`, {
         headers: { 'Authorization': `bearer ${token}` }
       })
       if (!res.ok) throw new Error('gagal mengambil kategori')
@@ -42,8 +42,8 @@ export default function KelolaKategori() {
     }
 
     const url = editId
-      ? `http://localhost:3000/kategori/${editId}`
-      : 'http://localhost:3000/kategori'
+      ? `${import.meta.env.VITE_API_URL}/kategori/${editId}`
+      : `${import.meta.env.VITE_API_URL}/kategori`
     const method = editId ? 'PUT' : 'POST'
 
     try {
@@ -71,7 +71,7 @@ export default function KelolaKategori() {
     const yakin = window.confirm('apakah data mau dihapus?')
     if (yakin) {
       try {
-        const res = await fetch(`http://localhost:3000/kategori/${id_kategori}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/kategori/${id_kategori}`, {
           method: 'DELETE',
           headers: { 'Authorization': `bearer ${token}` }
         })

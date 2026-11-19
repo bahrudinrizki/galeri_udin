@@ -9,9 +9,9 @@ export default function Dashboard() {
       try {
         const headers = { 'Authorization': `bearer ${token}` }
         const [resPengguna, resFoto, resKategori] = await Promise.all([
-          fetch('http://localhost:3000/pengguna', { headers }),
-          fetch('http://localhost:3000/foto', { headers }),
-          fetch('http://localhost:3000/kategori', { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/pengguna`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/foto`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/kategori`, { headers }),
         ])
         if (!resPengguna.ok || !resFoto.ok || !resKategori.ok) {
           throw new Error('gagal mengambil data dashboard')

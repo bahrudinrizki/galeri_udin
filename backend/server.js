@@ -1,12 +1,13 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000
 const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const cors = require('cors');
 const path = require('path');
 const jsonwebtoken = require('jsonwebtoken')
+require('dotenv').config();
 const authJWT = require('./middleware')
 const isAdmin = authJWT.isAdmin
 const storage = multer.diskStorage({
@@ -20,11 +21,11 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'galeri',
-});
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
+})
 
 db.connect(err => {
   if (err) {
@@ -39,7 +40,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
-// hanya pemilik akun (atau admin) yang boleh mengakses /:id_pengguna
+
 const cekPemilikAkun = (req, res, next) => {
   if (String(req.user.id) !== req.params.id_pengguna && req.user.role !== 'admin') {
     return res.sendStatus(403)
@@ -47,7 +48,6 @@ const cekPemilikAkun = (req, res, next) => {
   next()
 }
 
-// hanya pemilik foto (atau admin) yang boleh mengubah / menghapus foto
 const cekPemilikFoto = (req, res, next) => {
   const { id_foto } = req.params
   db.query('select id_pengguna from foto where id_foto = ?', [id_foto], (err, result) => {
@@ -399,7 +399,7 @@ app.post('/login', (req, res) => {
     if (!passwordValid) {
       return res.status(401).json({ message: 'password salah' })
     }
-    const token = jsonwebtoken.sign({id: user.id_pengguna, role: user.role}, authJWT.kataRahasia, { expiresIn: 86400 })
+    const token = jsonwebtoken.sign({ id: user.id_pengguna, role: user.role }, authJWT.kataRahasia, { expiresIn: 86400 })
     res.status(200).json({
       auth: true,
       token,

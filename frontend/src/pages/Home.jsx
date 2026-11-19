@@ -12,7 +12,7 @@ export default function Home() {
 
   const getFeed = async () => {
     try {
-      const res = await fetch('http://localhost:3000/feed', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/feed`, {
         headers: { 'Authorization': `bearer ${token}` }
       })
       if (!res.ok) throw new Error('gagal mengambil feed')
@@ -38,7 +38,7 @@ export default function Home() {
 
   const handleLike = async (id_foto) => {
     try {
-      const res = await fetch(`http://localhost:3000/foto/${id_foto}/like`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/foto/${id_foto}/like`, {
         method: 'POST',
         headers: { 'Authorization': `bearer ${token}` }
       })
@@ -58,7 +58,7 @@ export default function Home() {
 
   const getKomentar = async (id_foto) => {
     try {
-      const res = await fetch(`http://localhost:3000/foto/${id_foto}/komentar`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/foto/${id_foto}/komentar`, {
         headers: { 'Authorization': `bearer ${token}` }
       })
       if (!res.ok) throw new Error('gagal mengambil komentar')
@@ -88,7 +88,7 @@ export default function Home() {
       return
     }
     try {
-      const res = await fetch(`http://localhost:3000/foto/${selected.id_foto}/komentar`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/foto/${selected.id_foto}/komentar`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export default function Home() {
     const yakin = window.confirm('apakah komentar mau dihapus?')
     if (yakin) {
       try {
-        const res = await fetch(`http://localhost:3000/komentar/${id_komentar}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/komentar/${id_komentar}`, {
           method: 'DELETE',
           headers: { 'Authorization': `bearer ${token}` }
         })

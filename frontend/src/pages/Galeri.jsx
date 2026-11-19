@@ -17,7 +17,7 @@ export default function Galeri() {
   const [selected, setSelected]= useState(null)
 
   useEffect(() => {
-    fetch(`http://localhost:3000/kategori`, {
+    fetch(`${import.meta.env.VITE_API_URL}/kategori`, {
       headers: { 'Authorization': `bearer ${token}` }
     })
       .then((res) => res.json())
@@ -27,7 +27,7 @@ export default function Galeri() {
 
   const getGaleri = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/foto/${id_pengguna}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/foto/${id_pengguna}`, {
         headers: { 'Authorization': `bearer ${token}` }
       })
       if (!res.ok) throw new Error('gagal mengambil foto')
@@ -100,7 +100,7 @@ export default function Galeri() {
     formData.append("id_pengguna", id_pengguna)
     if (file) formData.append("file", file)
     try {
-      const url = isEdit ? `http://localhost:3000/foto/${idFoto}` : `http://localhost:3000/foto`
+      const url = isEdit ? `${import.meta.env.VITE_API_URL}/foto/${idFoto}` : `${import.meta.env.VITE_API_URL}/foto`
       const method = isEdit ? 'PUT' : 'POST'
       const res = await fetch(url, {
         method: method,
@@ -131,7 +131,7 @@ export default function Galeri() {
   const handleDelete = async (id_foto) => {
     const confirm = window.confirm('apakah data mau dihapus?')
     if (confirm) {
-      const res = await fetch(`http://localhost:3000/foto/${id_foto}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/foto/${id_foto}`, {
         headers: { 'Authorization': `bearer ${token}` },
         method: 'DELETE'
       })

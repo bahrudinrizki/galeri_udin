@@ -7,7 +7,7 @@ export default function KelolaPengguna() {
 
   const ambilPengguna = async () => {
     try {
-      const res = await fetch('http://localhost:3000/pengguna', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/pengguna`, {
         headers: { 'Authorization': `bearer ${token}` }
       })
       if (!res.ok) throw new Error('gagal mengambil pengguna')
@@ -26,7 +26,7 @@ export default function KelolaPengguna() {
     const yakin = window.confirm('pengguna beserta semua fotonya akan dihapus, lanjutkan?')
     if (yakin) {
       try {
-        const res = await fetch(`http://localhost:3000/pengguna/${id_pengguna}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/pengguna/${id_pengguna}`, {
           method: 'DELETE',
           headers: { 'Authorization': `bearer ${token}` }
         })

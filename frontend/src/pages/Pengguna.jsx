@@ -10,7 +10,7 @@ export default function Pengguna() {
   const id_pengguna = localStorage.getItem("id_pengguna")
   const token = localStorage.getItem("token")
   useEffect(() => {
-    fetch(`http://localhost:3000/pengguna/${id_pengguna}`, {
+    fetch(`${import.meta.env.VITE_API_URL}/pengguna/${id_pengguna}`, {
       headers: { 'Authorization': `bearer ${token}` }
     })
       .then((res) => {
@@ -28,7 +28,7 @@ export default function Pengguna() {
   const handleUpdate = async (e) => {
     e.preventDefault()
     try {
-      const res = await fetch(`http://localhost:3000/pengguna/${id_pengguna}`,
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/pengguna/${id_pengguna}`,
         {
           headers: {
             'Authorization': `bearer ${token}`, 'content-type': 'application/json',
