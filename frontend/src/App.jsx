@@ -1,13 +1,16 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Layout from "./layouts/Layout";
-import Home from "./pages/Home"
-import Pengguna from "./pages/Pengguna";
-import Galeri from "./pages/Galeri";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Layout from "./layouts/Layout";
+import Home from "./pages/Home";
+import Pengguna from "./pages/Pengguna";
+import Galeri from "./pages/Galeri";
 import AdminRoute from "./components/AdminRoute";
 import AdminLayout from "./layouts/AdminLayout";
-import Kategori from "./pages/Kategori";
+import Dashboard from "./pages/Dashboard";
+import KelolaPengguna from "./pages/KelolaPengguna";
+import KelolaKategori from "./pages/KelolaKategori";
+
 
 
 
@@ -25,12 +28,11 @@ export default function App() {
           <Route path="pengguna" element={<Pengguna />}></Route>
           <Route path="galeri" element={<Galeri />}></Route>
         </Route>
-
         <Route path="/admin" element={<AdminRoute />}>
           <Route element={<AdminLayout/>}>
-            <Route index element={<h2>Dashboard Admin</h2>} />
-            <Route path="kategori" element={<Kategori/>} />
-            <Route path="pengguna" element={<h2>Kelola Pengguna</h2>} />
+            <Route index element={<Dashboard/>} />
+            <Route path="kategori" element={<KelolaKategori/>} />
+            <Route path="pengguna" element={<KelolaPengguna/>} />
           </Route>
         </Route>
 

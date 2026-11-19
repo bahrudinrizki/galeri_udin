@@ -2,11 +2,13 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 
 export default function Header() {
   const navigate = useNavigate()
+  const role =localStorage.getItem('role')
   const handleLogout = () => {
     localStorage.removeItem("token")
     localStorage.removeItem("id_pengguna")
     localStorage.removeItem("role")
     navigate("/login")
+
 
 
   }
@@ -29,6 +31,12 @@ export default function Header() {
             <li className="nav-item">
               <NavLink to={'/galeri'} className="nav-link">Galeri</NavLink>
             </li>
+
+            {role === 'admin' && (
+              <li className="nav-item">
+                <NavLink to={'/admin'} className="nav-link">Dashboard Admin</NavLink>
+              </li>
+            )}
 
             <li className="nav-item">
               <button className='btn btn-danger' onClick={handleLogout}>Logout</button>

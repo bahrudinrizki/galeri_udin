@@ -7,21 +7,23 @@ import { useEffect } from "react";
 
 export default function Layout() {
   const token = localStorage.getItem('token')
-  const navigate =useNavigate()
-  useEffect(() =>{
-    if (!token){
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (!token) {
       navigate('/login')
     }
-  },[token,navigate])
+  }, [token, navigate])
   return (
     <div className="wrapper">
-      <Header/>
+      <Header />
+      <div className="container">
         <div className="row">
           <div className="col">
-            <Outlet/>
+            <Outlet />
           </div>
-        </div>     
-      <Footer/>
+        </div>
+      </div>
+      <Footer />
     </div>
   )
 }

@@ -487,58 +487,105 @@
     }
 
 
-/* Layout Admin */
+    /* Layout Admin */
 
-.admin-layout {
-  display: flex;
-  min-height: 100vh;
-}
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
 
-.admin-sidebar {
-  width: 240px;
-  padding: 25px 18px;
-  background: #212529;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-}
+    .admin-sidebar {
+      width: 240px;
+      padding: 1.5rem 1.1rem;
+      background: var(--green);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
 
-.admin-link {
-  color: #adb5bd;
-  text-decoration: none;
-  padding: 10px 12px;
-  border-radius: 5px;
-}
+    .admin-sidebar h5 {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: -.015em;
+    }
 
-.admin-link:hover,
-.admin-link.active {
-  background: #343a40;
-  color: white;
-}
+    .admin-link {
+      padding: .4rem .65rem;
+      color: rgb(255 255 255 / 76%);
+      text-decoration: none;
+      border-radius: .25rem;
+      font-size: .9rem;
+    }
 
-.admin-content {
-  flex: 1;
-  min-width: 0;
-  padding: 25px;
-  background: #f8f9fa;
-}
+    .admin-link:hover,
+    .admin-link.active {
+      color: var(--white);
+      background: rgb(255 255 255 / 12%);
+    }
 
-@media (max-width: 767px) {
-  .admin-layout {
-    flex-direction: column;
-  }
+    .admin-garis {
+      margin: .5rem 0;
+      border-color: rgb(255 255 255 / 25%);
+      opacity: 1;
+    }
 
-  .admin-sidebar {
-    width: 100%;
-  }
+    /* Tombol Logout di atas latar hijau */
+    html body .admin-sidebar .btn-danger {
+      --bs-btn-color: #fff;
+      --bs-btn-bg: transparent;
+      --bs-btn-border-color: rgb(255 255 255 / 55%);
+      --bs-btn-hover-color: var(--green);
+      --bs-btn-hover-bg: #fff;
+      --bs-btn-hover-border-color: #fff;
+      --bs-btn-active-color: var(--green);
+      --bs-btn-active-bg: #fff;
+      --bs-btn-active-border-color: #fff;
+    }
 
-  .admin-content {
-    padding: 15px;
-  }
-}
+    .admin-content {
+      flex: 1;
+      min-width: 0;
+      padding: 2rem;
+      background: var(--paper);
+    }
 
+    @media (max-width: 767px) {
+      .admin-layout {
+        flex-direction: column;
+      }
 
+      .admin-sidebar {
+        width: 100%;
+      }
+
+      .admin-content {
+        padding: 1rem;
+      }
+
+      .admin-content .card {
+        border: 1px solid var(--rule);
+        border-radius: 0;
+        background: var(--white);
+        box-shadow: none;
+      }
+
+      .angka-dashboard {
+        font-size: 2rem;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+
+      .komentar-item {
+        padding: .75rem 0;
+        border-top: 1px solid var(--rule);
+      }
+
+      /* Nama penulis di kartu feed tampil di baris sendiri */
+      .album .card-body>small.mb-2 {
+        display: block;
+      }
+    }
   </style>
   <title>frontend</title>
 </head>

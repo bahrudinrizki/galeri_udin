@@ -133,6 +133,9 @@ app.get('/pengguna/:id_pengguna', authJWT, cekPemilikAkun, (req, res) => {
 
 app.delete('/pengguna/:id_pengguna', authJWT, isAdmin, (req, res) => {
   const { id_pengguna } = req.params;
+  if (String(req.user.id) === id_pengguna) {
+    return res.status(400).json({ error: "tidak bisa menghapus akun sendiri" })
+  }
   const sql = 'DELETE FROM pengguna WHERE id_pengguna = ?';
   db.query(sql, [id_pengguna], (err, result) => {
     if (err) return res.status(500).json({ error: err.sqlMessage })
@@ -148,22 +151,32 @@ app.delete('/pengguna/:id_pengguna', authJWT, isAdmin, (req, res) => {
 
 
 
-app.post('/pengguna', async (req, res) => {
+app.post('/pengguna', (req, res) => {
   const { nama, email, password, no_hp } = req.body;
-
-  const sql = 'INSERT INTO pengguna (nama, email, password, no_hp) VALUES (?, ?, ?, ?)';
-  try {
-    const hashPassword = await bcrypt.hash(password, 10);
-    db.query(sql, [nama, email, hashPassword, no_hp], (err, result) => {
-      if (err) return res.status(500).json({ error: err.sqlMessage });
-      res.json({
-        message: "pengguna berhasil ditambahkan",
-        id_pengguna: result.insertId,
-      });
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  if (!nama || !email || !password) {
+    return res.status(400).json({ message: "nama, email, dan password wajib diisi" })
   }
+
+  const sqlCek = 'SELECT id_pengguna FROM pengguna WHERE email = ?';
+  db.query(sqlCek, [email], async (err, result) => {
+    if (err) return res.status(500).json({ error: err.sqlMessage });
+    if (result.length > 0) {
+      return res.status(409).json({ message: "email sudah terdaftar" })
+    }
+    try {
+      const hashPassword = await bcrypt.hash(password, 10);
+      const sql = "INSERT INTO pengguna (nama, email, password, no_hp, role) VALUES (?, ?, ?, ?, 'user')";
+      db.query(sql, [nama, email, hashPassword, no_hp], (err2, result2) => {
+        if (err2) return res.status(500).json({ error: err2.sqlMessage });
+        res.json({
+          message: "pengguna berhasil ditambahkan",
+          id_pengguna: result2.insertId,
+        });
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  })
 });
 
 app.put('/pengguna/:id_pengguna', authJWT, cekPemilikAkun, async (req, res) => {
@@ -279,6 +292,98 @@ app.put("/foto/:id_foto", authJWT, cekPemilikFoto, upload.single("file"), async 
   } catch (error) {
     res.status(500).json({ error: "gagal update" })
   }
+})
+
+app.get('/feed', authJWT, (req, res) => {
+  const sql = `select a.id_foto, a.judul, a.deskripsi, a.tgl_unggah, a.nama_file,
+    b.nama_kategori, c.nama,
+    (select count(*) from like_foto l where l.id_foto = a.id_foto) as jumlah_like,
+    (select count(*) from komentar_foto k where k.id_foto = a.id_foto) as jumlah_komentar,
+    (select count(*) from like_foto l where l.id_foto = a.id_foto and l.id_pengguna = ?) as sudah_like
+    from foto a
+    left join kategori b on a.id_kategori = b.id_kategori
+    left join pengguna c on a.id_pengguna = c.id_pengguna
+    order by a.tgl_unggah desc`
+  db.query(sql, [req.user.id], (err, result) => {
+    if (err) return res.status(500).json({ error: err.sqlMessage })
+    res.json(result)
+  })
+})
+
+app.post('/foto/:id_foto/like', authJWT, (req, res) => {
+  const { id_foto } = req.params
+  const id_pengguna = req.user.id
+  const sql = 'select id_like from like_foto where id_foto = ? and id_pengguna = ?'
+  db.query(sql, [id_foto, id_pengguna], (err, result) => {
+    if (err) return res.status(500).json({ error: err.sqlMessage })
+    if (result.length > 0) {
+      db.query('delete from like_foto where id_like = ?', [result[0].id_like], (err2) => {
+        if (err2) return res.status(500).json({ error: err2.sqlMessage })
+        res.json({ message: "like dibatalkan", liked: false })
+      })
+    } else {
+      const sqlInsert = 'insert into like_foto(id_foto, id_pengguna, tgl_like) values (?,?,now())'
+      db.query(sqlInsert, [id_foto, id_pengguna], (err2) => {
+        if (err2) {
+          if (err2.code === 'ER_NO_REFERENCED_ROW_2') {
+            return res.status(404).json({ error: "foto tidak ditemukan" })
+          }
+          return res.status(500).json({ error: err2.sqlMessage })
+        }
+        res.json({ message: "berhasil menyukai foto", liked: true })
+      })
+    }
+  })
+})
+
+app.get('/foto/:id_foto/komentar', authJWT, (req, res) => {
+  const { id_foto } = req.params
+  const sql = `select k.id_komentar, k.isi_komentar, k.tgl_komentar, k.id_pengguna, p.nama
+    from komentar_foto k
+    join pengguna p on k.id_pengguna = p.id_pengguna
+    where k.id_foto = ?
+    order by k.tgl_komentar desc, k.id_komentar desc`
+  db.query(sql, [id_foto], (err, result) => {
+    if (err) return res.status(500).json({ error: err.sqlMessage })
+    res.json(result)
+  })
+})
+
+app.post('/foto/:id_foto/komentar', authJWT, (req, res) => {
+  const { id_foto } = req.params
+  const isi_komentar = (req.body.isi_komentar || '').trim()
+  if (!isi_komentar) {
+    return res.status(400).json({ message: "isi komentar wajib diisi" })
+  }
+  if (isi_komentar.length > 500) {
+    return res.status(400).json({ message: "komentar maksimal 500 karakter" })
+  }
+  const sql = 'insert into komentar_foto(id_foto, id_pengguna, isi_komentar, tgl_komentar) values (?,?,?,now())'
+  db.query(sql, [id_foto, req.user.id, isi_komentar], (err, result) => {
+    if (err) {
+      if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+        return res.status(404).json({ error: "foto tidak ditemukan" })
+      }
+      return res.status(500).json({ error: err.sqlMessage })
+    }
+    res.json({ message: "komentar berhasil ditambahkan", id_komentar: result.insertId })
+  })
+})
+
+app.delete('/komentar/:id_komentar', authJWT, (req, res) => {
+  const { id_komentar } = req.params
+  const sql = 'select id_pengguna from komentar_foto where id_komentar = ?'
+  db.query(sql, [id_komentar], (err, result) => {
+    if (err) return res.status(500).json({ error: err.sqlMessage })
+    if (result.length === 0) return res.status(404).json({ error: "komentar tidak ditemukan" })
+    if (result[0].id_pengguna !== req.user.id && req.user.role !== 'admin') {
+      return res.sendStatus(403)
+    }
+    db.query('delete from komentar_foto where id_komentar = ?', [id_komentar], (err2) => {
+      if (err2) return res.status(500).json({ error: err2.sqlMessage })
+      res.json({ message: "komentar berhasil dihapus" })
+    })
+  })
 })
 
 app.post('/login', (req, res) => {
